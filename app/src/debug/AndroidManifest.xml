@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Debug builds only: the developer's view of the database (tools/peek.py dump). Not in release builds. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <!-- Card 16d (debug only): the switch that lets screenshots see the main screen, and what starts it. -->
+        <activity
+            android:name="app.stash.debug.DebugSettingsActivity"
+            android:exported="true" />
+        <provider
+            android:name="app.stash.debug.DebugSecureInit"
+            android:authorities="${applicationId}.debugsecureinit"
+            android:exported="false" />
+        <receiver
+            android:name="app.stash.debug.DumpReceiver"
+            android:exported="true" />
+        <!-- Card 16a: write, read back and remove 1 MB through the attachment store (proof Tink runs on the phone). -->
+        <receiver
+            android:name="app.stash.debug.AttachmentSelfTestReceiver"
+            android:exported="true" />
+        <!-- Card 26c: save 10 s of tone through RecordingSaver, read back, write out, remove, purge (throwaway database). -->
+        <receiver
+            android:name="app.stash.debug.RecordingSelfTestReceiver"
+            android:exported="true" />
+        <!-- Card 16b: prepare one picked picture at each size and show bytes, time and WebP chunks. -->
+        <activity
+            android:name="app.stash.debug.PictureSizeActivity"
+            android:exported="true" />
+        <!-- Card 24 spike (throwaway): record, feed the recogniser, keep the audio. -->
+        <activity
+            android:name="app.stash.debug.AudioSpikeActivity"
+            android:exported="true"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true" />
+        <!-- Card 26a (debug only): our own recorder, the level rule and the locked-phone check C2. Nothing is saved. -->
+        <activity
+            android:name="app.stash.debug.RecorderCheckActivity"
+            android:exported="true"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true" />
+        <!-- Card 26b (debug only): one note encoded five ways while recorded; sizes, Stop-to-finish times, decode,
+             playback from memory; check C3 and outcomes E1/E2. Saves no sound. -->
+        <activity
+            android:name="app.stash.debug.AudioFormatCheckActivity"
+            android:exported="true" />
+        <!-- Card 26d (debug only): import a speech model pack zip copied in with adb (the PC route), and write out the
+             card 25 corpus through Container.transcriber with load times and memory. -->
+        <receiver
+            android:name="app.stash.debug.ModelImportReceiver"
+            android:exported="true" />
+        <activity
+            android:name="app.stash.debug.TranscriberCheckActivity"
+            android:exported="true" />
+        <!-- Card 26e (debug only): peak memory of Container.transcriber in a real WorkManager job on long notes. -->
+        <receiver
+            android:name="app.stash.debug.LongNoteMemoryReceiver"
+            android:exported="true" />
+        <receiver android:name="app.stash.debug.TranscriptionCheckReceiver" android:exported="true" /><!-- Card 26f: save a corpus WAV as a real recorded note now or after a delay (check C1), and report the events. -->
+        <!-- Card 25 spike (throwaway): record the owner's corpus as WAV. -->
+        <activity
+            android:name="app.stash.debug.CorpusRecorderActivity"
+            android:exported="true" />
+        <!-- Card 25 spike (throwaway): run a speech engine over the corpus, in the app's own process (a second
+             process would run StashApp.onCreate twice). Compiled only when the sherpa-onnx AAR is present
+             outside the repository (app/build.gradle.kts). -->
+        <activity
+            android:name="app.stash.debug.EngineSpikeActivity"
+            android:exported="true" />
+        <receiver
+            android:name="app.stash.debug.Spike25WorkReceiver"
+            android:exported="true" />
+    </application>
+</manifest>

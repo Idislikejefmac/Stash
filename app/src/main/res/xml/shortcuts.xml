@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Card 16c: lets "Stash" appear in the top row of the share sheet. The matching dynamic shortcut is published by
+     app.stash.share.ShareShortcut. Without it Stash is still in the ordinary share list. -->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <share-target android:targetClass="app.stash.share.ShareActivity">
+        <data android:mimeType="text/plain" />
+        <data android:mimeType="image/*" />
+        <category android:name="app.stash.category.SHARE_TARGET" />
+    </share-target>
+</shortcuts>

@@ -1,0 +1,13 @@
+# Normalise text files; keep Windows scripts CRLF and Unix scripts LF.
+* text=auto
+*.bat text eol=crlf
+*.sh text eol=lf
+gradlew text eol=lf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.webp binary
+*.jar binary
+*.apk binary
+*.aab binary

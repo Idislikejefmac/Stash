@@ -1,0 +1,14 @@
+Code built into the sherpa-onnx 2.0.1 libraries
+
+The sherpa-onnx Android library (sherpa-onnx-2.0.1.aar) contains no NOTICE or licence file of its own, and the sherpa-onnx repository has no NOTICE file at tag v2.0.1. Its build (CMakeLists.txt and cmake/*.cmake at tag v2.0.1) compiles these projects into its native libraries. Their licence files follow, as published at the version the build names.
+
+- kaldi-native-fbank v1.22.4 (github.com/csukuangfj/kaldi-native-fbank): Apache License 2.0, the same text as sherpa-onnx's own licence above.
+- kaldi-decoder v0.3.0 (github.com/k2-fsa/kaldi-decoder): Apache License 2.0, the same text as sherpa-onnx's own licence above.
+- kaldifst v1.8.0 (github.com/k2-fsa/kaldifst): see kaldifst-LICENSE.
+- OpenFst v1.8.5-2026-07-09 (github.com/csukuangfj/openfst): Apache License 2.0, see openfst-COPYING.
+- simple-sentencepiece v0.7 (github.com/pkufool/simple-sentencepiece): Apache License 2.0, see simple-sentencepiece-LICENSE.
+- utf8proc v2.12.0 (github.com/JuliaStrings/utf8proc): MIT, with the Unicode data licence, see utf8proc-LICENSE.md.
+- JSON for Modern C++ v3.12.0 (github.com/nlohmann/json): MIT, see nlohmann-json-LICENSE.MIT.
+- hclust-cpp 2026-02-25 (github.com/csukuangfj/hclust-cpp): BSD 2-clause, see hclust-cpp-LICENSE.
+- Eigen 3.4.0 (gitlab.com/libeigen/eigen), used by kaldi-decoder: Mozilla Public License 2.0. Its source is available from gitlab.com/libeigen/eigen. The MPL 2.0 text is included in ONNX Runtime's third-party notices below.
+- ONNX Runtime: see its own entry.
