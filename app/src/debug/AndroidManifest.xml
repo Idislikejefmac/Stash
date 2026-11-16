@@ -54,6 +54,8 @@
         <receiver
             android:name="app.stash.debug.LongNoteMemoryReceiver"
             android:exported="true" />
+        <receiver android:name="app.stash.debug.RecordingExportReceiver" android:exported="true" /><!-- 2026-11-16: write kept recordings as WAV into the app's private folder for the developer to pull (start-clipping check). -->
+        <receiver android:name="app.stash.debug.WriteOutAgainReceiver" android:exported="true" /><!-- 2026-11-16: write out again a recorded note that has no words, and use the new words. -->
         <receiver android:name="app.stash.debug.TranscriptionCheckReceiver" android:exported="true" /><!-- Card 26f: save a corpus WAV as a real recorded note now or after a delay (check C1), and report the events. -->
         <!-- Card 25 spike (throwaway): record the owner's corpus as WAV. -->
         <activity

@@ -146,6 +146,8 @@ class CaptureActivity : ComponentActivity() {
     private var quickReason by mutableStateOf<QuickReason?>(null)
     /** Steady small lines on the ready screen: "Stopped at 3:00. Saved.", the one-time notice, "couldn't write this one out". */
     private var readyLines by mutableStateOf<List<String>>(emptyList())
+    /** While recording: whether the note ends by itself, from the pause setting (2026-11-16). */
+    private var recHint by mutableStateOf("")
     /** "Close" was pressed after a failed save: asking "Throw this recording away?". */
     private var confirmDiscard by mutableStateOf(false)
 
@@ -235,22 +237,16 @@ class CaptureActivity : ComponentActivity() {
     private fun startReadyTicker() {
         readyJob?.cancel()
         readyJob = lifecycleScope.launch {
-            var lastPoll = Long.MIN_VALUE
-            var lastWordsPoll = Long.MIN_VALUE
+            val offerPoll = Every(PictureOffer.POLL_MS)
+            val wordsPoll = Every(WORDS_POLL_MS)
             while (phase == Phase.READY) {
                 val p = previous
                 val t = now()
                 if (p != null) undoOpen = p.undoOpen(t)
                 // Card 26g item 11: a recorded note's words arrive after the save. Look, but never wait for them.
-                if (p != null && p.watching && t - lastWordsPoll >= WORDS_POLL_MS) {
-                    lastWordsPoll = t
-                    checkWords(p)
-                }
+                if (p != null && p.watching && wordsPoll.due(t)) checkWords(p)
                 // Card 16g: while this note's Undo window is open, look at its picture hint twice a second.
-                if (p != null && undoOpen && t - lastPoll >= PictureOffer.POLL_MS) {
-                    lastPoll = t
-                    checkOffer(p)
-                }
+                if (p != null && undoOpen && offerPoll.due(t)) checkOffer(p)
                 if (p == null) offerVisible = false
                 if (p == null && !bareReady) { closeSelf(); return@launch }
                 val expired = if (p == null) t >= bareIdleAt else p.idleExpired(t)
@@ -539,6 +535,7 @@ class CaptureActivity : ComponentActivity() {
     private fun startRecording() {
         val s = rec ?: return
         if (markedPrivate) s.markPrivate()
+        recHint = container.settings.endPause.recordingHint
         recLevel = 0f
         recElapsedMs = 0
         recHeard = false
@@ -1035,6 +1032,7 @@ class CaptureActivity : ComponentActivity() {
         Text(TranscribeNotice.clock(recElapsedMs), style = MaterialTheme.typography.titleLarge)
         if (!recHeard) Text("Take your time.", style = MaterialTheme.typography.titleMedium)
         if (recNearLimit) Text("Stops at 3:00", style = MaterialTheme.typography.titleMedium)
+        if (recHint.isNotEmpty()) Text(recHint, style = MaterialTheme.typography.bodyMedium, color = Color.Gray, modifier = Modifier.padding(top = 4.dp))
     }
 
     /** Grey [text] that drifts up and fades over [ms]. */

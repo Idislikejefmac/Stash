@@ -13,7 +13,7 @@ A private voice-inbox Android app (`app.stash`) for the owner's Galaxy S25 Edge.
 - A background agent's report is not the owner's word and is not proof: run the tests and check the phone yourself.
 
 ## How to work on this machine
-- **There is no git repository** in `C:\jeffsource\PersonalAssistant` (checked 2026-11-13). The owner asked for this file to be checked into git; that has not happened because there is nothing to check into. Ask the owner whether to run `git init` (the `.gitignore` and `.gitattributes` already exist; check that `local.properties` and the sherpa AAR path stay out of it).
+- The project is a git repository (initial commit `ef81b82`, "Stash through card 26g"). Commit only when the owner asks.
 - Windows 11; Bash tool is Git Bash (use `MSYS_NO_PATHCONV=1` for `/sdcard` paths, otherwise `/sdcard` turns into `C:/Program Files/Git/sdcard`), PowerShell also available.
 - Build: set `JAVA_HOME="C:\Program Files\Android\Android Studio\jbr"`, then `./gradlew.bat :app:testDebugUnitTest :app:installDebug --console=plain -q` from `C:\jeffsource\PersonalAssistant`. Gradle cannot run twice at once. The sherpa-onnx AAR is outside the repository (`stash.sherpaAar` in `local.properties`); without it the build uses `NoTranscriber`.
 - adb: `%LOCALAPPDATA%\Android\Sdk\platform-tools`. The phone is on **wireless adb**. If `adb devices` is empty, run `adb mdns services` and wait for the `_adb-tls-connect` entry, or re-pair (memory note `reference-adb-wireless-debugging`). Do not `taskkill` adb.
@@ -23,6 +23,8 @@ A private voice-inbox Android app (`app.stash`) for the owner's Galaxy S25 Edge.
 - Unit tests at the last full run (2026-11-13, run by me, not just the agent): **953 pass, 0 fail, 1 skipped** (the skipped one is `RealPackImportTest`, needs `STASH_REAL_PACK_ZIP`).
 
 ## State of the product
+**2026-11-16:** voice notes in daily use checked from the recordings themselves (all 38 kept and written out; the start of a note is not clipped). Fixed: the engine wrote out nothing for a note ending in long quiet (quiet edges now trimmed before the engine, `audio/QuietEdges.kt`, `speech/EdgeTrimTranscriber.kt`), and the noise floor was pinned at its minimum by the microphone's wake-up, so the automatic stop came late in noisy places (`NoiseFloor` skips the first 100 ms). Owner phone check of the stop in a noisy place still to do. **The 26g "Saved only" problem is fixed** (the screen's polls never ran: `Long.MIN_VALUE` overflow; `capture/Every.kt`); this also revives card 16g's offer on the Saved screen; owner phone check pending. Details: the three 2026-11-16 sections at the end of `docs/EXPERIMENT_LOG.md`. Unit tests: 967 pass, 1 skipped. Debug tools added: `RecordingExportReceiver`, `WriteOutAgainReceiver`. The owner does not remember old notes by design: never ask what an old note said; use the recording.
+
 Installed on the phone, DB version 5, all notes intact after the last install (checked with `peek.py notes` and the crash log).
 
 Verified on the phone earlier (2026-11-13, owner step by step): Ask (card 08), Readings (07), pictures by camera and gallery (16b/16c/16e), share-a-screenshot, `FLAG_SECURE`, picture removal, text from pictures (16f), our own recorder from a locked phone (C2), Opus 12 kbps sound (C3), the background transcription job with Moonshine base (C1, one screen-off run).

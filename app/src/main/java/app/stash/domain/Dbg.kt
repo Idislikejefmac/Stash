@@ -46,6 +46,12 @@ enum class DbgCode {
      * many traces). Never the question or the answer.
      */
     MARKED_WRONG, BLANKED,
+    /**
+     * 2026-11-16 (component TRANSCRIBE, speech/EdgeTrimTranscriber): quiet trimmed from a piece before the engine
+     * (n1 ms from the start, n2 ms from the end); a retry on the speech alone after an empty result (n1 audio ms,
+     * n2 1 if it found words).
+     */
+    TRIMMED, RETRIED,
 }
 
 /** Where events go. The phone's implementation writes `app_event`; tests use a list. */

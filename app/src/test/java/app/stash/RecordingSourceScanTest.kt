@@ -29,6 +29,14 @@ class RecordingSourceScanTest {
         assertTrue(File(main, "data/AttachmentRepository.kt").readText().contains("suspend fun openRecording("))
     }
 
+    /** Debug builds may open recordings only from the named developer tools; a new caller must be added here on purpose. */
+    @Test fun debugToolsThatOpenARecordingAreListed() {
+        val debug = File("src/debug/java/app/stash")
+        val callers = kotlinFiles(debug).filter { Regex("\\bopenRecording\\s*\\(").containsMatchIn(it.readText()) }
+            .map { it.relativeTo(debug).invariantSeparatorsPath }.sorted()
+        assertEquals(listOf("debug/RecordingExportReceiver.kt", "debug/RecordingSelfTestReceiver.kt"), callers)
+    }
+
     @Test fun thePictureDoorRefusesARecording() {
         val text = File(main, "data/AttachmentRepository.kt").readText()
         assertTrue(text.contains("suspend fun openBytes(attachmentId: String): InputStream = open(attachmentId, audio = false)"))

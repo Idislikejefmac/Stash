@@ -41,6 +41,7 @@ import app.stash.speech.ModelImporter
 import app.stash.speech.ModelLocator
 import app.stash.speech.ModelPacks
 import app.stash.speech.ChunkedTranscriber
+import app.stash.speech.EdgeTrimTranscriber
 import app.stash.speech.NoTranscriber
 import app.stash.speech.Transcriber
 import app.stash.speech.sherpa.SherpaEngine
@@ -644,7 +645,7 @@ class Container(private val app: Application) {
      * engine is wrapped so that a long note is written out in pieces cut at real pauses (short notes go through whole).
      */
     private val engineTranscriber: Transcriber by lazy {
-        SherpaEngine.transcriber(modelLocator, app.assets, ::availableMemory)?.let { ChunkedTranscriber(it) } ?: NoTranscriber
+        SherpaEngine.transcriber(modelLocator, app.assets, ::availableMemory)?.let { ChunkedTranscriber(EdgeTrimTranscriber(it)) } ?: NoTranscriber
     }
 
     /** True when this build contains the speech engine (the AAR was given to the build). */

@@ -3,10 +3,15 @@ package app.stash.domain
 import kotlin.math.sqrt
 
 /** Setting "End a voice note after a pause of" (card 26a item 5). Read by the capture screen in card 26g. */
-enum class EndPause(val pauseMs: Long?, val label: String) {
-    SHORT(2_500L, "2.5 seconds"),
-    LONG(5_000L, "5 seconds"),
-    ONLY_DONE(null, "Only when I tap Done");
+enum class EndPause(
+    val pauseMs: Long?,
+    val label: String,
+    /** 2026-11-16: the line under the meter while recording, so nobody has to guess whether the note ends by itself. */
+    val recordingHint: String,
+) {
+    SHORT(2_500L, "2.5 seconds", "Stops by itself when you pause."),
+    LONG(5_000L, "5 seconds", "Stops by itself when you pause."),
+    ONLY_DONE(null, "Only when I tap Done", "Tap Done when you've finished.");
 
     companion object {
         fun parse(s: String?): EndPause = entries.firstOrNull { it.name == s } ?: SHORT
@@ -25,6 +30,8 @@ object EndpointTuning {
     const val MIN_FLOOR = 0.0005
     /** The floor is the quietest one second seen so far: the lowest average of 50 chunks. */
     const val FLOOR_WINDOW_CHUNKS = 50
+    /** The microphone's wake-up (about 70 ms of near-silence on the S25 Edge) is left out of the floor: 100 ms. */
+    const val FLOOR_SKIP_CHUNKS = 5
     const val HEARD_SPEECH_MS = 300L
     /** The meter shows level / METER_FULL, capped at 1. */
     const val METER_FULL = 0.25
@@ -121,19 +128,27 @@ class Endpointer(
  * The noise floor as the level rule tracks it: the quietest one-second average of chunk levels seen so far (the
  * quietest single chunk until a full second has been seen), never below [EndpointTuning.MIN_FLOOR]. Shared by the
  * [Endpointer] (card 26a) and card 26e's PauseSplitter, so both call the same sound "speech".
+ *
+ * The first [EndpointTuning.FLOOR_SKIP_CHUNKS] chunks are left out (2026-11-16): on the S25 Edge every recording
+ * starts with about 70 ms of near-silence while the microphone wakes, which pinned the floor at its minimum for the
+ * whole note, so ordinary room noise counted as speech and the pause stop came late or never. Checked against the
+ * owner's 38 real recordings: no note stops earlier than it did; in noisy places the last "speech" moves about 1 s
+ * nearer the last word.
  */
 class NoiseFloor {
     private var floor = Double.MAX_VALUE
     private val window = DoubleArray(EndpointTuning.FLOOR_WINDOW_CHUNKS)
+    private var seen = 0
     private var windowFill = 0
     private var windowPos = 0
     private var windowSum = 0.0
     private var minChunkSoFar = Double.MAX_VALUE
 
-    /** 0 until the first chunk. */
+    /** 0 until the first chunk after the skipped start. */
     val value: Double get() = if (floor == Double.MAX_VALUE) 0.0 else floor
 
     fun update(rms: Double) {
+        if (seen++ < EndpointTuning.FLOOR_SKIP_CHUNKS) return
         if (rms < minChunkSoFar) minChunkSoFar = rms
         if (windowFill < window.size) {
             window[windowFill++] = rms; windowSum += rms
